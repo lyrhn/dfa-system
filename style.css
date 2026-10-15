@@ -1,23 +1,23 @@
 /* Layout: header strip, input card, then two cards side by side (diagram + table | trace + flow); single warm light theme */
 /* Theme Colors & Fonts */
 :root{
-  --peach-1:#fbe3d6; 
-  --peach-2:#f7c9ab; 
+  --peach-1:#fbe3d6; /* bg up */
+  --peach-2:#f7c9ab; /* bg down */
   --card:#fdf3ec; 
   --card-2:#fffaf6; 
-  --line:#ecd6c7;
-  --ink:#2f4a3e; 
-  --muted:#6c6158;
-  --coral:#ef4560; 
-  --coral-soft:#fcdde1; 
-  --pink:#f3a3a3; 
-  --peach:#f8cfb6; 
-  --sage-beige:#cfcaa9; 
-  --sage:#7fae96; 
-  --sage-dark:#3f6b58;
+  --line:#ecd6c7; 
+  --ink:#444a2f; 
+  --muted:#444a2f; /* */
+  --coral:#ef4560;  /* */
+  --coral-soft:#fcdde1; /* */
+  --pink:#f3a3a3; /* */
+  --peach:#f8cfb6; /* */
+  --sage-beige:#cfcaa9; /* */
+  --sage:#7fae96; /* */
+  --sage-dark:#3f6b58; /* */
   --f-head:'Ubuntu',system-ui,sans-serif; 
-  --f-mono:'Ubuntu Mono',ui-monospace,Consolas,monospace;
-  color-scheme:light;
+  --f-mono:'Ubuntu Mono',ui-monospace,Consolas,monospace; 
+  color-scheme:light; 
 }
 
 /* Page Base */
