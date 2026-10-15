@@ -14,11 +14,9 @@
 <!-- Page Wrapper -->
 <div class="wrap">
   <!-- Header -->
-  <header style="display:grid;gap:18px">
-    <div class="dots" aria-hidden="true"><i style="background:var(--coral)"></i><i style="background:var(--pink)"></i><i style="background:var(--peach)"></i><i style="background:var(--sage-beige)"></i><i style="background:var(--sage)"></i></div>
-    <div class="meta"><span>Automata Theory</span><span>Midterm Project</span><span>BSCS 3 - E</span></div>
+  <header>
+    <div class="meta"><span>Automata Theory</span><span>Midterm Project</span><span>BSCS 3 - E</span><div class="swatch" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div></div>
     <div class="brand">
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#3f4a45" stroke-width="2.5" aria-hidden="true"><circle cx="8" cy="8" r="5"/><circle cx="32" cy="20" r="5"/><circle cx="8" cy="32" r="5"/><path d="M12 10.5 27.5 18M12 29.5 27.5 22"/></svg>
       <div><h1><span>DFA</span> Input String Checker</h1><p id="sub" class="sub">Recognizes binary strings that end in 1</p></div>
     </div>
   </header>
@@ -26,23 +24,40 @@
   <!-- Input String -->
   <section class="card">
     <label class="label" for="binaryInput">Input string</label>
+    <p id="instr" class="hint">Enter a binary string, then check whether it ends in 1. Maximum 32 symbols.</p>
     <div class="row">
       <input id="binaryInput" value="0111" inputmode="numeric" maxlength="32" autocomplete="off" spellcheck="false" aria-describedby="hint">
       <button id="checkBtn" class="btn-sage">Check String</button>
       <button id="clearBtn" class="btn-peach">Clear</button>
       <button id="changeBtn" class="btn-peach">Change State</button>
     </div>
-    <p id="hint" class="hint">Enter only 0 and 1.</p>
+    <p id="hint" class="hint">Leave the input blank to test the empty string (ε).</p>
     <!-- Input Tape -->
-    <div id="tape" class="tape"></div>
+    <div class="tape-panel">
+      <span class="tape-label">Input tape</span>
+      <div id="tape" class="tape" aria-label="Input symbols"></div>
+    </div>
+    <!-- The current step and result stay beside the input. -->
+    <div id="pop" class="pop" role="status" aria-live="polite" hidden>
+      <div class="pop-head"><span id="popTitle" class="label"></span><button class="x" id="closeBtn" aria-label="Dismiss progress">Close</button></div>
+      <div class="bar"><i id="bar"></i></div>
+      <div id="popBody"></div>
+    </div>
   </section>
+
+      <!-- DFA Definition -->
+      <section class="card">
+        <div class="label">DFA Definition</div>
+        <div id="defBox" class="def"></div>
+        <p id="defLang" class="hint"></p>
+      </section>
 
   <!-- Two-Column Layout -->
   <div class="cols">
     <!-- Left Column -->
     <div class="col">
       <!-- DFA State Diagram -->
-      <section class="card">
+      <section class="card diagram-card">
         <div class="label">DFA State Diagram</div>
         <div class="status">
           <span id="curChip" class="chip cur">q0</span>
@@ -61,7 +76,7 @@
             <g class="edge g" id="e-q1-q0"><path d="M318 156 L220 156"/><path class="flow" d="M318 156 L220 156" stroke-opacity="0"/><text x="264" y="182">0</text></g>
             <line x1="40" y1="142" x2="132" y2="142" stroke="#3f6b58" stroke-width="2.5" marker-end="url(#mg)"/>
             <text x="40" y="128" style="font:400 15px var(--f-head);fill:#4a4038">start</text>
-            <g class="st" id="s-q0"><circle cx="178" cy="142" r="40"/><text x="178" y="148" text-anchor="middle">q0</text><text class="cap" x="178" y="215" text-anchor="middle">ends in 0</text></g>
+            <g class="st" id="s-q0"><circle cx="178" cy="142" r="40"/><text x="178" y="148" text-anchor="middle">q0</text><text class="cap" x="178" y="215" text-anchor="middle">empty or ends in 0</text></g>
             <g class="st" id="s-q1"><circle cx="358" cy="142" r="40"/><circle cx="358" cy="142" r="32" style="fill:none"/><text x="358" y="148" text-anchor="middle">q1</text><text class="cap" x="358" y="215" text-anchor="middle">ends in 1</text></g>
           </svg>
         </div>
@@ -78,6 +93,28 @@
         </div>
       </section>
 
+
+    </div>
+
+    <!-- Right Column -->
+    <div class="col">
+
+
+      <section class="card">
+        <!-- Processing Trace -->
+        <div class="label">Processing Trace</div>
+        <ol id="trace" class="trace" tabindex="0" aria-label="Processing trace, scroll to review steps"></ol>
+        <!-- Transition Rules -->
+        <div class="label">Transition Rules</div>
+        <ol id="rules" class="trace rules" tabindex="0" aria-label="Transition rules, scroll to review steps"></ol>
+        <!-- Complete State Flow -->
+        <div class="flowbox">
+          <div class="label">Complete State Flow</div>
+          <div id="path" class="path" tabindex="0" aria-label="Complete state flow"></div>
+        </div>
+      </section>
+    </div>
+  </div>
       <!-- Test Cases -->
       <section class="card">
         <div class="label">Test Cases</div>
@@ -89,39 +126,6 @@
         </div>
         <p id="tcSummary" class="hint"></p>
       </section>
-    </div>
-
-    <!-- Right Column -->
-    <div class="col">
-      <!-- DFA Definition -->
-      <section class="card">
-        <div class="label">DFA Definition</div>
-        <div id="defBox" class="def"></div>
-        <p id="defLang" class="hint"></p>
-      </section>
-
-      <section class="card">
-        <!-- Processing Trace -->
-        <div class="label">Processing Trace</div>
-        <ol id="trace" class="trace"></ol>
-        <!-- Transition Rules -->
-        <div class="label">Transition Rules</div>
-        <ol id="rules" class="trace rules"></ol>
-        <!-- Complete State Flow -->
-        <div class="flowbox">
-          <div class="label">Complete State Flow</div>
-          <div id="path" class="path"></div>
-        </div>
-      </section>
-    </div>
-  </div>
-</div>
-
-<!-- Result Popup -->
-<div id="pop" class="pop" role="dialog" aria-live="polite" aria-labelledby="popTitle" hidden>
-  <div class="pop-head"><span id="popTitle" class="label"></span><button class="x" id="closeBtn" aria-label="Close">✕</button></div>
-  <div class="bar"><i id="bar"></i></div>
-  <div id="popBody"></div>
 </div>
 
 <!-- Script -->
