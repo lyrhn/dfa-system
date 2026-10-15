@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DFA Input String Checker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&family=Ubuntu+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header style="display:grid;gap:18px">
+    <div class="dots" aria-hidden="true"><i style="background:var(--coral)"></i><i style="background:var(--pink)"></i><i style="background:var(--peach)"></i><i style="background:var(--sage-beige)"></i><i style="background:var(--sage)"></i></div>
+    <div class="meta"><span>Automata Theory</span><span>Midterm Project</span><span>BSCS 3 - E</span></div>
+    <div class="brand">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#3f4a45" stroke-width="2.5" aria-hidden="true"><circle cx="8" cy="8" r="5"/><circle cx="32" cy="20" r="5"/><circle cx="8" cy="32" r="5"/><path d="M12 10.5 27.5 18M12 29.5 27.5 22"/></svg>
+      <div><h1><span>DFA</span> Input String Checker</h1><p class="sub">Recognizes binary strings that end in 1</p></div>
+    </div>
+  </header>
+
+  <section class="card">
+    <label class="label" for="binaryInput">Input string</label>
+    <div class="row">
+      <input id="binaryInput" value="0111" inputmode="numeric" maxlength="32" autocomplete="off" spellcheck="false" aria-describedby="hint">
+      <button id="checkBtn" class="btn-sage">Check String</button>
+      <button id="clearBtn" class="btn-peach">Clear</button>
+    </div>
+    <p id="hint" class="hint">Enter only 0 and 1.</p>
+    <div id="tape" class="tape"></div>
+  </section>
+
+  <div class="cols">
+    <section class="card">
+      <div class="label">DFA State Diagram</div>
+      <div class="status">
+        <span id="curChip" class="chip cur">q0</span>
+        <span id="stepChip" class="chip">step 0 of 0</span>
+        <span id="verdictChip" class="chip" hidden></span>
+      </div>
+      <div class="diagram">
+        <svg viewBox="0 0 520 270" role="img" aria-label="State diagram with states q0 and q1">
+          <defs>
+            <marker id="mg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 10 5 0 10" fill="none" stroke="#3f6b58" stroke-width="2"/></marker>
+            <marker id="mc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0 10 5 0 10" fill="none" stroke="#ef4560" stroke-width="2"/></marker>
+          </defs>
+          <g class="edge g" id="e-q0-q0"><path d="M165 108 C130 30 225 30 190 108"/><path class="flow" d="M165 108 C130 30 225 30 190 108" stroke-opacity="0"/><text x="172" y="38">0</text></g>
+          <g class="edge c" id="e-q1-q1"><path d="M345 108 C310 30 405 30 370 108"/><path class="flow" d="M345 108 C310 30 405 30 370 108" stroke-opacity="0"/><text x="352" y="38">1</text></g>
+          <g class="edge c" id="e-q0-q1"><path d="M220 128 L318 128"/><path class="flow" d="M220 128 L318 128" stroke-opacity="0"/><text x="264" y="118">1</text></g>
+          <g class="edge g" id="e-q1-q0"><path d="M318 156 L220 156"/><path class="flow" d="M318 156 L220 156" stroke-opacity="0"/><text x="264" y="182">0</text></g>
+          <line x1="40" y1="142" x2="132" y2="142" stroke="#3f6b58" stroke-width="2.5" marker-end="url(#mg)"/>
+          <text x="40" y="128" style="font:400 15px var(--f-head);fill:#4a4038">start</text>
+          <g class="st" id="s-q0"><circle cx="178" cy="142" r="40"/><text x="178" y="148" text-anchor="middle">q0</text><text class="cap" x="178" y="215" text-anchor="middle">ends in 0</text></g>
+          <g class="st" id="s-q1"><circle cx="358" cy="142" r="40"/><circle cx="358" cy="142" r="32" style="fill:none"/><text x="358" y="148" text-anchor="middle">q1</text><text class="cap" x="358" y="215" text-anchor="middle">ends in 1</text></g>
+        </svg>
+      </div>
+      <div class="label">Transition Table</div>
+      <div class="tt-wrap">
+        <table class="tt">
+          <thead><tr><th>Current State</th><th>Input 0</th><th>Input 1</th></tr></thead>
+          <tbody>
+            <tr id="r-q0"><th>→ q0 (Start)</th><td id="t-q0-0">q0</td><td id="t-q0-1">q1</td></tr>
+            <tr id="r-q1"><th>* q1 (Accept)</th><td id="t-q1-0">q0</td><td id="t-q1-1">q1</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="label">Processing Trace</div>
+      <ol id="trace" class="trace"></ol>
+      <div class="flowbox">
+        <div class="label">Complete State Flow</div>
+        <div id="path" class="path"></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div id="pop" class="pop" role="dialog" aria-live="polite" aria-labelledby="popTitle" hidden>
+  <div class="pop-head"><span id="popTitle" class="label"></span><button class="x" id="closeBtn" aria-label="Close">✕</button></div>
+  <div class="bar"><i id="bar"></i></div>
+  <div id="popBody"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
