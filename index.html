@@ -19,7 +19,7 @@
     <div class="meta"><span>Automata Theory</span><span>Midterm Project</span><span>BSCS 3 - E</span></div>
     <div class="brand">
       <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#3f4a45" stroke-width="2.5" aria-hidden="true"><circle cx="8" cy="8" r="5"/><circle cx="32" cy="20" r="5"/><circle cx="8" cy="32" r="5"/><path d="M12 10.5 27.5 18M12 29.5 27.5 22"/></svg>
-      <div><h1><span>DFA</span> Input String Checker</h1><p class="sub">Recognizes binary strings that end in 1</p></div>
+      <div><h1><span>DFA</span> Input String Checker</h1><p id="sub" class="sub">Recognizes binary strings that end in 1</p></div>
     </div>
   </header>
 
@@ -30,6 +30,7 @@
       <input id="binaryInput" value="0111" inputmode="numeric" maxlength="32" autocomplete="off" spellcheck="false" aria-describedby="hint">
       <button id="checkBtn" class="btn-sage">Check String</button>
       <button id="clearBtn" class="btn-peach">Clear</button>
+      <button id="changeBtn" class="btn-peach">Change State</button>
     </div>
     <p id="hint" class="hint">Enter only 0 and 1.</p>
     <!-- Input Tape -->

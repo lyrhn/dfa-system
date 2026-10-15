@@ -1,10 +1,17 @@
 // DFA Input String Checker
 (() => {
   // Transition Function (δ)
-  const delta = {
-    q0: { 0: 'q0', 1: 'q1' },
-    q1: { 0: 'q0', 1: 'q1' }
+  // q1 is always the only accept state. Change State swaps which symbol leads there:
+  // reading `target` goes to q1, the other symbol goes to q0 (from both states).
+  const buildDelta = t => {
+    const o = t === '1' ? '0' : '1';
+    return {
+      q0: { [t]: 'q1', [o]: 'q0' },
+      q1: { [t]: 'q1', [o]: 'q0' }
+    };
   };
+  let target = '1',
+      delta = buildDelta(target);
 
   // Start and Accept States
   const START = 'q0',
@@ -98,6 +105,15 @@
       frame++;
       render(frame);
     }, 1000);
+  }
+
+  // Change State
+  // Swaps the target symbol (1 <-> 0), rebuilds δ, refreshes every panel that shows it, then restarts the run so nothing stale stays on screen.
+  function change() {
+    target = target === '1' ? '0' : '1';
+    delta = buildDelta(target);
+    renderDFA();
+    load();
   }
 
   // Render Step
@@ -230,6 +246,7 @@
   // Button and Keyboard Events
   $('closeBtn').onclick = close;
   $('checkBtn').onclick = start;
+  $('changeBtn').onclick = change;
   $('clearBtn').onclick = () => {
     input.value = '';
     load();
@@ -251,36 +268,53 @@
     `Start state = ${START}`,
     `Accept states F = ${set(F)}`
   ].map(l => `<div>${l}</div>`).join('');
-  $('defLang').textContent = 'Language: binary strings that end in 1.';
 
-  // Test Cases: "Expected" is the hand-written answer; "Actual" comes from runDFA, the same function the checker uses.
-  const TESTS = [
-    ['1', 'ACCEPTED'],
-    ['0', 'REJECTED'],
-    ['11', 'ACCEPTED'],
-    ['10', 'REJECTED'],
-    ['101', 'ACCEPTED'],
-    ['100', 'REJECTED'],
-    ['111', 'ACCEPTED'],
-    ['110', 'REJECTED'],
-    ['0101', 'ACCEPTED'],
-    ['1000', 'REJECTED'],
-    ['', 'REJECTED']
-  ];
+  // Language for the current target symbol. Plain string logic (no DFA), so "Expected" stays independent of the checker.
+  const lang = () => `binary strings that end in ${target}`;
+  const inLang = s => s.endsWith(target);
+
+  // Test Cases
+  const TESTS = ['1', '0', '11', '10', '101', '100', '111', '110', '0101', '1000', ''];
   const chip = v => `<span class="chip ${v === 'ACCEPTED' ? 'ok' : 'bad'}">${v}</span>`;
-  let passed = 0;
-  $('tcBody').innerHTML = TESTS.map(([s, expected], i) => {
-    const run = runDFA(s),
-          fin = run.at(-1),
-          actual = fin === ACCEPT ? 'ACCEPTED' : 'REJECTED',
-          ok = actual === expected;
-    passed += ok;
-    return `<tr class="${ok ? '' : 'mismatch'}"><td>${i + 1}</td><td class="mono">${s || 'ε'}</td><td class="mono">${run.join(' → ')}</td>` +
-      `<td class="mono">${fin}</td><td>${chip(expected)}</td><td>${chip(actual)}${ok ? '' : ' <b>✗ mismatch</b>'}</td></tr>`;
-  }).join('');
-  $('tcSummary').textContent = `${passed} of ${TESTS.length} cases match the expected result.`;
-  if (passed < TESTS.length) $('tcSummary').className = 'hint warn';
+
+  // Everything that depends on δ is redrawn here, so the Change State button only has to rebuild δ and call this.
+  function renderDFA() {
+    // Header and Language
+    $('sub').textContent = `Recognizes ${lang()}`;
+    $('defLang').textContent = `Language: ${lang()}.`;
+
+    // State Diagram and Transition Table: each transition δ(q, c) = p drives the edge q → p and its table cell
+    Q.forEach(q => SIGMA.forEach(c => {
+      const to = delta[q][c],
+            edge = $(`e-${q}-${to}`);
+      edge.querySelector('text').textContent = c;
+      edge.classList.remove('g', 'c');
+      edge.classList.add(c === '0' ? 'g' : 'c');
+      $(`t-${q}-${c}`).textContent = to;
+    }));
+
+    // State Captions: a state's caption is the symbol it loops on (the last symbol read to get there)
+    Q.forEach(q => {
+      $('s-' + q).querySelector('.cap').textContent = `ends in ${SIGMA.find(c => delta[q][c] === q)}`;
+    });
+
+    // Test Cases: "Expected" comes from inLang (hand-written rule); "Actual" comes from runDFA, the same function the checker uses.
+    let passed = 0;
+    $('tcBody').innerHTML = TESTS.map((s, i) => {
+      const expected = inLang(s) ? 'ACCEPTED' : 'REJECTED',
+            run = runDFA(s),
+            fin = run.at(-1),
+            actual = fin === ACCEPT ? 'ACCEPTED' : 'REJECTED',
+            ok = actual === expected;
+      passed += ok;
+      return `<tr class="${ok ? '' : 'mismatch'}"><td>${i + 1}</td><td class="mono">${s || 'ε'}</td><td class="mono">${run.join(' → ')}</td>` +
+        `<td class="mono">${fin}</td><td>${chip(expected)}</td><td>${chip(actual)}${ok ? '' : ' <b>✗ mismatch</b>'}</td></tr>`;
+    }).join('');
+    $('tcSummary').textContent = `${passed} of ${TESTS.length} cases match the expected result.`;
+    $('tcSummary').className = passed < TESTS.length ? 'hint warn' : 'hint';
+  }
 
   // Initial Render
+  renderDFA();
   load();
 })();
